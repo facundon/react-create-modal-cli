@@ -9,7 +9,7 @@ const log = console.log
 const CONTEXT_PATH = "./context/ModalsContext.tsx"
 const TYPE_PATH = "./@types/modals.ts"
 const COMPONENT_PATH = "./components/modals"
-const RENDER_PATH = "./pages/index.tsx"
+const RENDER_PATH = "./components/pages/HomePage.tsx"
 
 // ---------------UTILS------------------------
 const capitalize = (string) => {
@@ -33,12 +33,14 @@ const ${capitalize(modalName)}Modal: FunctionComponent<${capitalize(
    modalName
 )}ModalProps> = () => {
    const { modalsState, closeModal } = useModals()
-   const close${modalName}Modal = useCallback(() => closeModal("${modalName}"), [closeModal])
+   const close${capitalize(
+      modalName
+   )}Modal = useCallback(() => closeModal("${modalName}"), [closeModal])
 
    return (
       <BaseDialog
          open={modalsState.${modalName}.isOpen}
-         onClose={close${modalName}Modal}
+         onClose={close${capitalize(modalName)}Modal}
          title="Titulo"
          withCloseButton
          backdropClose
@@ -92,12 +94,12 @@ function createModalComponent(modalName) {
 function renderModal(modalName) {
    log(chalk.yellow("Adding to render"))
    let data = readFileSync(RENDER_PATH, { encoding: "utf-8" })
-   const insertImportIndex = data.indexOf('} from "../components/modals"')
+   const insertImportIndex = data.indexOf('} from "../modals"')
    const importStringToAdd = `   ${capitalize(modalName)}Modal
    `
    data = addStr(data, insertImportIndex, importStringToAdd)
 
-   const insertComponentIndex = endIndex(data, "<>")
+   const insertComponentIndex = data.indexOf("</>")
    const componentStringToAdd = `
       <${capitalize(modalName)}Modal />`
    const result = addStr(data, insertComponentIndex, componentStringToAdd)
